@@ -1,0 +1,27 @@
+{
+  "name": "zekebot",
+  "version": "1.0.0",
+  "description": "Scraper for 1DV449",
+  "main": "app.js",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "express": "^4.13.3",
+    "init": "^0.1.2",
+    "promises": "^0.2.5",
+    "request": "^2.65.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ej222pj/WebteknikII_Lab1.git"
+  },
+  "author": "Eric Jennerstrand",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ej222pj/WebteknikII_Lab1/issues"
+  },
+  "homepage": "https://github.com/ej222pj/WebteknikII_Lab1#readme"
+}
