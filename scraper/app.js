@@ -1,13 +1,12 @@
 var express = require('express');
 var app = express();
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-});
+// read configuration and routes
+require('./modules/routes')(app);
+require('./modules/config')(app);
 
-var server = app.listen(3000, function () {
-  var host = server.address().address;
-  var port = server.address().port;
+var port = app.get('port');
 
-  console.log('Example app listening at http://%s:%s', host, port);
-});
+app.listen(port, function() {
+	console.log('Started on localhost: ' + port);
+})

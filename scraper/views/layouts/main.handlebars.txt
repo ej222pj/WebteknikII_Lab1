@@ -1,0 +1,10 @@
+<html>
+<head>
+	<title>Lab 1 - Scraping</title>
+</head>
+
+<body>
+	{{{body}}}
+</body>
+
+</html>
