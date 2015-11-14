@@ -12,4 +12,4 @@
 * En musikgrupp = Peter, Paul and Mary
 * En seriefigur = Stora stygga vargen / Zeke Varg eller Fabian Bom
 * En tidning = Flygsoldat 113 Bom (91an)
-* Ett fotbollslag
+* Ett fotbollslag = Tottenham Hotspur
