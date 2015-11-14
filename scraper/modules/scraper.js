@@ -9,12 +9,14 @@ requestp(url)
 	.then(function(html){
 
 		var $ = cheerio.load(html);
-		var links = "<li>";
+		var links = [];
 
-		$('ol').children().each(function() {
-			var data = $(this);
-			console.log(data.children().first().text());	
-		})
+		$('a').each(function(i, link){
+      		var a = $(this).next();
+      		console.log($(link).attr('href'));
+
+      		links.push($(link).attr('href'));
+    	});
 
 		exports.scrape = links;
 	});

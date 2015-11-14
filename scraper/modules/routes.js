@@ -6,7 +6,7 @@ module.exports = function(app) {
 		res.render('home');
 	});
 
-	app.get('/scrape', function(req, res) {
+	app.get('/scraper', function(req, res) {
 		res.render('home', {
 			scrape: scraper.scrape
 		});
