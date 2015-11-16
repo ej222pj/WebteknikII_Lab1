@@ -1,130 +1,80 @@
-var promise = require('promise');
+var promise = require('bluebird');
 var request = require("request");
 var cheerio = require("cheerio");
 
-var url = "http://localhost:3000/";
+var url = "http://localhost:3000";
 var firstLinks = [];
-var secondLinks = [];
 
-promiseFunc(url).then(function(html){
-	//Remove Last / sign
-	url = url.substring(0, url.length - 1);
-	getUrl(url);
-});
+var days = [];
+var	ok = [];
+var name;
+var person = {name: name, days: days, ok: ok};
 
-function getUrl(url){
-	promiseFunc(url).then(function(html){
-		var $ = cheerio.load(html);
+promiseFunc(url)
+.then(setCheerio)
+.then(getCalendarUrl)
+.then(setCheerio)
+.then(getPersonLinks)
+.then(scrapePersonOkdays)
 
-		$('a').each(function(i, link){
-      		console.log($(link).attr('href'));
-
-      		firstLinks.push($(link).attr('href'));
-    	});
-
-		openFirstLinks(firstLinks[0])
-	});
+function setCheerio(html){
+	$ = cheerio.load(html);
+	return $;
 }
 
-function openFirstLinks(partialHref){
-	var fullHref = url + partialHref;
+function getCalendarUrl($){
 
-	promiseFunc(fullHref).then(function(html){
-		var $ = cheerio.load(html);
-
-		$('a').each(function(i, link){
-			console.log($(link).attr('href'));
-			secondLinks.push($(link).attr('href'));
-		});
-
-		switch(partialHref){
-			case firstLinks[0]:
-				console.log("Cal");			
-				openPersonLinks(fullHref, secondLinks, html);
-				console.log(paulOkDays);
-				exports.scrape = secondLinks[0];
-				break;
-			case firstLinks[1]:
-				console.log("Cin");
-				exports.scrape = secondLinks[1];
-				break;
-			case firstLinks[2]:
-				console.log("Din");
-				exports.scrape = secondLinks[2];
-				break;
-		}
-	});
-}
-
-function openPersonLinks(currentUrl, partialHref, html){
-	//var fullHref = currentUrl + "/" + partialHref;
-	var persons = [];
-	
-	var pr = new promise(function (resolve, reject){
-		for (var i = 0; i < partialHref.length; i++) {
-			promiseFunc(currentUrl + "/" + partialHref[i])
-
-				persons.push(scrapePerson(html));
-				//console.log(personLinks[i]);
-				resolve(scrapePerson(html));
-		}
+	$('a').each(function(i, link){
+  		firstLinks.push($(link).attr('href'));
 	});
 
-	pr.then(function(){
-		//console.log(persons);
-	})
+	return promiseFunc(url + firstLinks[0]);
+}
 
-	/*promiseFunc(fullHref).then(function(html){
-		var $ = cheerio.load(html);
-
-				$('td').each(function(i, link) {
-					okeyDays.push($(link).text());
-				});		
-				console.log(okeyDays);	
+function getPersonLinks($){
+	var secondLinks = [];
+	$('a').each(function(i, link){
+		secondLinks.push($(link).attr('href'));
 	});
 
-	return okeyDays;
-*/
+	return secondLinks;
 }
 
-function scrapePerson(html) {
-	var days = [];
-	var ok = [];
-	var name;
-	console.log(html);
-
-		$('h2').each(function(i, link) {
-			console.log($(link).text());	
-    		//name = $(link).text();
-		});
-			//name = $(link).text();
-			//console.log(name);	
-
-	 //= getHtml.getElementsText(getHtml.getElements(html, "h2", false));
-	//days = getHtml.getElementsText(getHtml.getElements(html, "thead tr th", false));
-	//ok = getHtml.getElementsText(getHtml.getElements(html, "tbody tr td", false));
-
-	//var person = {name: name, days: days, ok: ok};
-
-	//return person;
-}
-
-function getOkDays(days, ok) {
-
-	var okDays = [];
-	for (var i = 0; i < days.length; i++) {
-		if(ok[i].toLowerCase().trim() === "ok"){
-			okDays[i] = true;
-		} else {
-			okDays[i] = false;
-		}
+function scrapePersonOkdays(secondLinks){
+	for(var i = 0; i < secondLinks.length; i++){
+		promiseFunc(url + firstLinks[0] + "/" + secondLinks[i])
+		.then(setCheerio)
+		.then(scrapePerson)					
 	}
 }
 
-function promiseFunc(url) {
-    return new promise(function (resolve, reject) {
-        request(url, function (err, res, html) {
-            resolve(html);
-        });
-    });
+function scrapePerson($) {
+	days = [];
+	ok = [];
+	name;
+
+	$('h2').each(function(i, link) {	
+		name = $(link).text();
+	});
+	$('th').each(function(i, link) {
+		days.push($(link).text());
+	});
+	$('td').each(function(i, link) {
+		//Behövs inte förens de är dags att kolla ?
+		//if($(link).text().toLowerCase().trim() === "ok"){
+		ok.push($(link).text());
+		//}
+	});
+
+	person = {name: name, days: days, ok: ok};
+	console.log(person);
 }
+
+function promiseFunc(url) {
+    return new promise(function(resolve, reject){
+    	request(url, function(err, res, html){
+    		if(err) { reject(err); }
+    		else { resolve(html) }
+    	});
+    });
+};

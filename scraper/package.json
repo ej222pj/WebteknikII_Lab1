@@ -12,7 +12,8 @@
     "nodemon": "~1.8.1",
     "promises": "^0.2.5",
     "request": "^2.65.0",
-    "request-promise": "^1.0.2"
+    "request-promise": "^1.0.2",
+    "bluebird": "~3.0.5"
   },
   "devDependencies": {},
   "scripts": {
