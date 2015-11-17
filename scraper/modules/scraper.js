@@ -5,6 +5,9 @@ var cheerio = require("cheerio");
 var url = "http://localhost:3000";
 var firstUrls = [];
 
+var personArray = [];
+var daysAllAreFree = [];
+
 promiseFunc(url)
 .then(setCheerio)
 .then(getFirstUrls)
@@ -14,7 +17,6 @@ promiseFunc(url)
 .then(openCinema)
 .then(setCheerio)
 .then(nextStep)
-
 //Person Functions!
 function getFirstUrls($){
 
@@ -35,7 +37,7 @@ function getPersonLinks($){
 }
 
 function scrapePersonOkdays(secondLinks){
-	for(var i = 0; i < secondLinks.length; i++){
+	 for(var i = 0; i < secondLinks.length; i++){
 		promiseFunc(url + firstUrls[0] + "/" + secondLinks[i])
 		.then(setCheerio)
 		.then(scrapePerson)				
@@ -56,56 +58,14 @@ function scrapePerson($) {
 	$('td').each(function(i, link) {
 		//Behövs inte förens de är dags att kolla ? /Lättare att spara på detta sättet
 		//if($(link).text().toLowerCase().trim() === "ok"){
-		okDays.push($(link).text());
+			okDays.push($(link).text());
 		//}
 	});
-
 	var person = {name: name, days: days, okDays: okDays};
-
-	findMatchingDays(person);
+	personArray.push(person);
 }
 
-function findMatchingDays(person){
-	var ok = [];
-	var okk = [];
-	var okkk = [];
-	var count = 0;
-	for (var key in person) {
-		//console.log(key + ' => ' + person[key]);
-		if(key === "okDays" && count === 0){
-			ok = person[key];
-			console.log(ok);
-		}
-		if(key === "okDays" && count === 1){
-			okk = person[key];
-			console.log(okk);
-		}
-		if(key === "okDays" && count === 2){
-			okkk = person[key];
-			console.log(okkk);
-		}
-	count++;
-	}
 
-console.log(ok);
-
-	/*if(ok[0].toLowerCase() === "ok" 
-		&& okk[0].toLowerCase() === "ok" 
-		&& okkk[0].toLowerCase() === "ok"){
-		console.log("0");
-	}
-	if(ok[1].toLowerCase() === "ok" 
-		&& okk[1].toLowerCase() === "ok" 
-		&& okkk[1].toLowerCase() === "ok"){
-		console.log("1");
-	}
-	if(ok[2].toLowerCase() === "ok" 
-		&& okk[2].toLowerCase() === "ok" 
-		&& okkk[2].toLowerCase() === "ok"){
-		console.log("2");
-	}
-	*/
-}
 //End Person Functions!
 
 function setCheerio(html){
@@ -119,7 +79,30 @@ function openCinema() {
 }
 
 function nextStep($){
-	console.log("nextStep")
+	findMatchingDays();
+	console.log("nextStep");
+	
+}
+
+function findMatchingDays(){
+	console.log(personArray[0].okDays[0]);
+
+	if(personArray[0].okDays[0].toLowerCase() === "ok" 
+		&& personArray[1].okDays[0].toLowerCase() === "ok" 
+		&& personArray[2].okDays[0].toLowerCase() === "ok"){
+		console.log("0");
+	}
+	if(personArray[0].okDays[1].toLowerCase() === "ok" 
+		&& personArray[1].okDays[1].toLowerCase() === "ok" 
+		&& personArray[2].okDays[1].toLowerCase() === "ok"){
+		console.log("1");
+	}
+	if(personArray[0].okDays[2].toLowerCase() === "ok" 
+		&& personArray[1].okDays[2].toLowerCase() === "ok" 
+		&& personArray[2].okDays[2].toLowerCase() === "ok"){
+		console.log("2");
+	}
+	
 }
 
 function promiseFunc(url) {
