@@ -46,9 +46,9 @@ function scrapePersonOkdays(secondLinks){
 }
 
 function scrapePerson($) {
+	var name;//Onödigt!
 	var days = [];
 	var okDays = [];
-	var name;//Onödigt!
 
 	$('h2').each(function(i, link) {	
 		name = $(link).text();
@@ -81,17 +81,31 @@ function findMatchingDays(){
 		&& personArray[2].okDays[2] === ok){
 		daysAllAreFree.push(personArray[0].days[2]);//Söndag
 	}	
-	console.log(personArray);
 }
-//Cinema Functions
+//Cinema Functions!
 function openCinema() {
 	return promiseFunc(url + firstUrls[1]);
 }
 
 function nextStep($){
+	//Ta fram dagarna som matchar
 	findMatchingDays();
+	var whichDay = [];
+	var whichMovie = []
+
+	$('#day').children().each(function(i, link){
+   		whichDay.push($(link).attr("value"));
+	});
+
+	$('#movie').children().each(function(i, link){
+   		whichMovie.push($(link).text());
+	});
+	//Ta bort först posten i arrayen
+	//Men tekniskt sätt tar den bort allt utom den första
+	whichMovie = whichMovie.splice(1, whichMovie.length - 1);
+	console.log(whichMovie);
 }
-//End Cinema Functions
+//End Cinema Functions!
 function setCheerio(html){
 	$ = cheerio.load(html);
 	return $;
