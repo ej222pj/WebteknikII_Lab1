@@ -17,6 +17,7 @@ promiseFunc(url)
 .then(openCinema)
 .then(setCheerio)
 .then(nextStep)
+
 //Person Functions!
 function getFirstUrls($){
 
@@ -56,54 +57,46 @@ function scrapePerson($) {
 		days.push($(link).text());
 	});
 	$('td').each(function(i, link) {
-		//Behövs inte förens de är dags att kolla ? /Lättare att spara på detta sättet
-		//if($(link).text().toLowerCase().trim() === "ok"){
-			okDays.push($(link).text());
-		//}
+		okDays.push($(link).text().toLowerCase());
 	});
 	var person = {name: name, days: days, okDays: okDays};
 	personArray.push(person);
 }
-
-
 //End Person Functions!
+function findMatchingDays(){
+	var ok = "ok";
 
-function setCheerio(html){
-	$ = cheerio.load(html);
-	return $;
+	if(personArray[0].okDays[0] === ok 
+		&& personArray[1].okDays[0] === ok 
+		&& personArray[2].okDays[0] === ok){
+		daysAllAreFree.push(personArray[0].days[0]);//Fredag
+	}
+	if(personArray[0].okDays[1] === ok 
+		&& personArray[1].okDays[1] === ok 
+		&& personArray[2].okDays[1] === ok){
+			daysAllAreFree.push(personArray[0].days[1]);//Lördag
+	}
+	if(personArray[0].okDays[2] === ok 
+		&& personArray[1].okDays[2] === ok 
+		&& personArray[2].okDays[2] === ok){
+		daysAllAreFree.push(personArray[0].days[2]);//Söndag
+	}	
+	console.log(personArray);
 }
-
-
+//Cinema Functions
 function openCinema() {
 	return promiseFunc(url + firstUrls[1]);
 }
 
 function nextStep($){
 	findMatchingDays();
-	console.log("nextStep");
-	
+}
+//End Cinema Functions
+function setCheerio(html){
+	$ = cheerio.load(html);
+	return $;
 }
 
-function findMatchingDays(){
-	console.log(personArray[0].okDays[0]);
-
-	if(personArray[0].okDays[0].toLowerCase() === "ok" 
-		&& personArray[1].okDays[0].toLowerCase() === "ok" 
-		&& personArray[2].okDays[0].toLowerCase() === "ok"){
-		console.log("0");
-	}
-	if(personArray[0].okDays[1].toLowerCase() === "ok" 
-		&& personArray[1].okDays[1].toLowerCase() === "ok" 
-		&& personArray[2].okDays[1].toLowerCase() === "ok"){
-		console.log("1");
-	}
-	if(personArray[0].okDays[2].toLowerCase() === "ok" 
-		&& personArray[1].okDays[2].toLowerCase() === "ok" 
-		&& personArray[2].okDays[2].toLowerCase() === "ok"){
-		console.log("2");
-	}
-	
-}
 
 function promiseFunc(url) {
     return new promise(function(resolve, reject){
