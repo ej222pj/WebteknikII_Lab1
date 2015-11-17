@@ -3,32 +3,26 @@ var request = require("request");
 var cheerio = require("cheerio");
 
 var url = "http://localhost:3000";
-var firstLinks = [];
-
-var days = [];
-var	ok = [];
-var name;
-var person = {name: name, days: days, ok: ok};
+var firstUrls = [];
 
 promiseFunc(url)
 .then(setCheerio)
-.then(getCalendarUrl)
+.then(getFirstUrls)
 .then(setCheerio)
 .then(getPersonLinks)
 .then(scrapePersonOkdays)
+.then(openCinema)
+.then(setCheerio)
+.then(nextStep)
 
-function setCheerio(html){
-	$ = cheerio.load(html);
-	return $;
-}
-
-function getCalendarUrl($){
+//Person Functions!
+function getFirstUrls($){
 
 	$('a').each(function(i, link){
-  		firstLinks.push($(link).attr('href'));
+  		firstUrls.push($(link).attr('href'));
 	});
 
-	return promiseFunc(url + firstLinks[0]);
+	return promiseFunc(url + firstUrls[0]);
 }
 
 function getPersonLinks($){
@@ -42,16 +36,16 @@ function getPersonLinks($){
 
 function scrapePersonOkdays(secondLinks){
 	for(var i = 0; i < secondLinks.length; i++){
-		promiseFunc(url + firstLinks[0] + "/" + secondLinks[i])
+		promiseFunc(url + firstUrls[0] + "/" + secondLinks[i])
 		.then(setCheerio)
-		.then(scrapePerson)					
+		.then(scrapePerson)				
 	}
 }
 
 function scrapePerson($) {
-	days = [];
-	ok = [];
-	name;
+	var days = [];
+	var okDays = [];
+	var name;//Onödigt!
 
 	$('h2').each(function(i, link) {	
 		name = $(link).text();
@@ -60,14 +54,72 @@ function scrapePerson($) {
 		days.push($(link).text());
 	});
 	$('td').each(function(i, link) {
-		//Behövs inte förens de är dags att kolla ?
+		//Behövs inte förens de är dags att kolla ? /Lättare att spara på detta sättet
 		//if($(link).text().toLowerCase().trim() === "ok"){
-		ok.push($(link).text());
+		okDays.push($(link).text());
 		//}
 	});
 
-	person = {name: name, days: days, ok: ok};
-	console.log(person);
+	var person = {name: name, days: days, okDays: okDays};
+
+	findMatchingDays(person);
+}
+
+function findMatchingDays(person){
+	var ok = [];
+	var okk = [];
+	var okkk = [];
+	var count = 0;
+	for (var key in person) {
+		//console.log(key + ' => ' + person[key]);
+		if(key === "okDays" && count === 0){
+			ok = person[key];
+			console.log(ok);
+		}
+		if(key === "okDays" && count === 1){
+			okk = person[key];
+			console.log(okk);
+		}
+		if(key === "okDays" && count === 2){
+			okkk = person[key];
+			console.log(okkk);
+		}
+	count++;
+	}
+
+console.log(ok);
+
+	/*if(ok[0].toLowerCase() === "ok" 
+		&& okk[0].toLowerCase() === "ok" 
+		&& okkk[0].toLowerCase() === "ok"){
+		console.log("0");
+	}
+	if(ok[1].toLowerCase() === "ok" 
+		&& okk[1].toLowerCase() === "ok" 
+		&& okkk[1].toLowerCase() === "ok"){
+		console.log("1");
+	}
+	if(ok[2].toLowerCase() === "ok" 
+		&& okk[2].toLowerCase() === "ok" 
+		&& okkk[2].toLowerCase() === "ok"){
+		console.log("2");
+	}
+	*/
+}
+//End Person Functions!
+
+function setCheerio(html){
+	$ = cheerio.load(html);
+	return $;
+}
+
+
+function openCinema() {
+	return promiseFunc(url + firstUrls[1]);
+}
+
+function nextStep($){
+	console.log("nextStep")
 }
 
 function promiseFunc(url) {
