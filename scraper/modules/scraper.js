@@ -16,7 +16,7 @@ promiseFunc(url)
 .then(scrapePersonOkdays)
 .then(openCinema)
 .then(setCheerio)
-.then(nextStep)
+.then(getDaysAndMovies)
 
 //Person Functions!
 function getFirstUrls($){
@@ -69,17 +69,20 @@ function findMatchingDays(){
 	if(personArray[0].okDays[0] === ok 
 		&& personArray[1].okDays[0] === ok 
 		&& personArray[2].okDays[0] === ok){
-		daysAllAreFree.push(personArray[0].days[0]);//Fredag
+			//daysAllAreFree.push(personArray[0].days[0]);//Fredag
+			daysAllAreFree.push(1);
 	}
 	if(personArray[0].okDays[1] === ok 
 		&& personArray[1].okDays[1] === ok 
 		&& personArray[2].okDays[1] === ok){
-			daysAllAreFree.push(personArray[0].days[1]);//Lördag
+			//daysAllAreFree.push(personArray[0].days[1]);//Lördag
+			daysAllAreFree.push(2);
 	}
 	if(personArray[0].okDays[2] === ok 
 		&& personArray[1].okDays[2] === ok 
 		&& personArray[2].okDays[2] === ok){
-		daysAllAreFree.push(personArray[0].days[2]);//Söndag
+			//daysAllAreFree.push(personArray[0].days[2]);//Söndag
+			daysAllAreFree.push(3);
 	}	
 }
 //Cinema Functions!
@@ -87,7 +90,7 @@ function openCinema() {
 	return promiseFunc(url + firstUrls[1]);
 }
 
-function nextStep($){
+function getDaysAndMovies($){
 	//Ta fram dagarna som matchar
 	findMatchingDays();
 	var whichDay = [];
@@ -100,11 +103,23 @@ function nextStep($){
 	$('#movie').children().each(function(i, link){
    		whichMovie.push($(link).text());
 	});
+
 	//Ta bort först posten i arrayen
-	//Men tekniskt sätt tar den bort allt utom den första
 	whichMovie = whichMovie.splice(1, whichMovie.length - 1);
 	console.log(whichMovie);
+
+
+	var strVar="";
+		strVar += "<form action='/scraper' method='post'>";
+		for(var i = 0; i < whichMovie.length; i++){
+			strVar += "<input type='radio' name='movie' value='" + whichMovie[i] +"'>" + whichMovie[i] + "<br>";  
+		}
+		strVar += "<input type='submit' value='Välj film'>";
+		strVar += "<\/form>";
+
+		exports.scrape = strVar;
 }
+
 //End Cinema Functions!
 function setCheerio(html){
 	$ = cheerio.load(html);
