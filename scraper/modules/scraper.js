@@ -7,6 +7,7 @@ var firstUrls = [];
 
 var personArray = [];
 var daysAllAreFree = [];
+var whichMovie = [];	
 
 promiseFunc(url)
 .then(setCheerio)
@@ -17,6 +18,8 @@ promiseFunc(url)
 .then(openCinema)
 .then(setCheerio)
 .then(getDaysAndMovies)
+.then(scrapeMovieJson)
+.then(getMovieTimesAndPresentThem)
 
 //Person Functions!
 function getFirstUrls($){
@@ -94,7 +97,7 @@ function getDaysAndMovies($){
 	//Ta fram dagarna som matchar
 	findMatchingDays();
 	var whichDay = [];
-	var whichMovie = []
+	var whichMovieValue = [];
 
 	$('#day').children().each(function(i, link){
    		whichDay.push($(link).attr("value"));
@@ -102,22 +105,57 @@ function getDaysAndMovies($){
 
 	$('#movie').children().each(function(i, link){
    		whichMovie.push($(link).text());
+   		whichMovieValue.push($(link).attr("value"));
 	});
 
 	//Ta bort först posten i arrayen
 	whichMovie = whichMovie.splice(1, whichMovie.length - 1);
-	console.log(whichMovie);
+	return whichMovieValue = whichMovieValue.splice(1, whichMovieValue.length - 1);
+}
 
+function scrapeMovieJson(whichMovieValue){
+	var promises = [];
+	var movieStatus = [];
 
-	var strVar="";
-		strVar += "<form action='/scraper' method='post'>";
-		for(var i = 0; i < whichMovie.length; i++){
-			strVar += "<input type='radio' name='movie' value='" + whichMovie[i] +"'>" + whichMovie[i] + "<br>";  
+	for(var i = 0; i < daysAllAreFree.length; i++){
+		for(var j = 0; j < whichMovieValue.length; j++){
+			promises.push(promiseFunc(
+				url + firstUrls[1] + "/check?day=0" + 
+				daysAllAreFree[i] + "&movie=" + whichMovieValue[j]));
 		}
-		strVar += "<input type='submit' value='Välj film'>";
-		strVar += "<\/form>";
+	}
+		return promise.map(promises, function (element) {
+			movieStatus.push(element);
+		})
+		.then(function () {
+			return movieStatus;
+		})
+}
 
-		exports.scrape = strVar;
+function getMovieTimesAndPresentThem(statuses){
+	var parsedJson = [];
+
+	for (var i = 0; i < statuses.length; i++) {
+		if (statuses[i] !== undefined) {
+			parsedJson.push(JSON.parse(statuses[i]));
+		}
+	}
+
+	var strVar = "";
+	strVar += "<ul>";
+
+	for (var i = 0; i < parsedJson.length; i++) {
+		for (var j = 0; j < parsedJson[i].length; j++) {
+			if (parsedJson[i][j].status === 1) {
+				strVar += "<li>Filmen " + whichMovie[parsedJson[i][j].movie.substring(1) - 1] + 
+				" går klockan " + parsedJson[i][j].time + "</li>";
+			}
+		}
+	}
+
+	strVar += "</ul>";
+
+	exports.scrape = strVar;	
 }
 
 //End Cinema Functions!
