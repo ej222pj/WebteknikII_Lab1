@@ -5,7 +5,7 @@ module.exports = function(app) {
 	app.get('/:var(home|index)?', function(req, res) {
 		res.render('home');
 	});
-
+	
 	app.get('/scraper', function(req, res) {
 		res.render('home', {
 			scrape: scraper.scrape
