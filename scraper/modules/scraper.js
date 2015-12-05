@@ -2,7 +2,6 @@ var promise = require('bluebird');
 var request = require("request");
 var cheerio = require("cheerio");
 
-
 var url = "http://localhost:3000";
 
 var firstUrls = [];

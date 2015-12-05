@@ -1,3 +1,0 @@
-Kolla upp js async och promises.
-
-Promises ska gå att lösa det med!
